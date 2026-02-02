@@ -1,0 +1,20 @@
+# Python AI Tutor - Backend Dependencies
+# All dependencies are free and open-source (MIT/BSD/Apache 2.0)
+
+# Web Framework
+fastapi==0.104.1        # MIT License - Modern web framework
+uvicorn==0.24.0         # BSD License - ASGI server
+pydantic==2.5.0         # MIT License - Data validation
+
+# HTTP Client (for AI API proxy)
+httpx==0.25.2           # BSD License - Async HTTP client
+
+# CORS Support
+python-multipart==0.0.6 # Apache 2.0 - File upload support
+
+# Future Dependencies (for SaaS phase)
+# sqlalchemy==2.0.23    # MIT License - Database ORM
+# aiosqlite==0.19.0     # MIT License - Async SQLite driver
+# pyjwt==2.8.0          # MIT License - JWT authentication
+# passlib==1.7.4        # BSD License - Password hashing
+

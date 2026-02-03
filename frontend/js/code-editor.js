@@ -1,6 +1,6 @@
 /**
  * Code Editor Module
- * Handles in-browser Python code execution
+ * Handles in-browser Python code execution, snippets, and formatting
  */
 
 export class CodeEditor {
@@ -18,6 +18,7 @@ export class CodeEditor {
     this.setupEventHandlers();
     this.setupResizableDivider();
     this.setupLibraryManager();
+    this.setupSnippetToolbar(); // New
     // Monaco will load lazily when Practice tab is first opened
   }
 
@@ -28,6 +29,11 @@ export class CodeEditor {
     const runButton = document.getElementById('run-code');
     if (runButton) {
       runButton.addEventListener('click', () => this.runCode());
+    }
+    
+    const formatButton = document.getElementById('format-code');
+    if (formatButton) {
+        formatButton.addEventListener('click', () => this.formatCode());
     }
 
     const clearButton = document.getElementById('clear-code');
@@ -70,8 +76,8 @@ export class CodeEditor {
    * Pre-loads common libraries for advanced lessons
    */
   async initializePyodide() {
-    if (this.pyodideReady) return;
-    if (this.pyodideLoading) return;
+    if (this.pyodideReady) return true;
+    if (this.pyodideLoading) return false;
     
     this.pyodideLoading = true;
     
@@ -94,13 +100,14 @@ sys.stdout = StringIO()
       await this.pyodide.loadPackage('micropip');
       
       // Pre-load common libraries (for advanced lessons)
-      this.displayOutput('🔄 Loading Python runtime + libraries...\nFirst time: 10-15 seconds\nAfter: Instant!\n\n(Loading: numpy, pandas, matplotlib, turtle...)');
+      this.displayOutput('🔄 Loading Python runtime + libraries...\nFirst time: 10-15 seconds\nAfter: Instant!\n\n(Loading: numpy, pandas, matplotlib, black...)');
       
       // Load commonly used packages available in Pyodide
       const packagesToLoad = [
         'numpy',      // For data science (L13, L18)
         'pandas',     // For data analysis (L18)
-        'matplotlib'  // For visualization (L18)
+        'matplotlib', // For visualization (L18)
+        'black'       // For auto-formatting
       ];
       
       for (const pkg of packagesToLoad) {
@@ -184,6 +191,73 @@ await micropip.install('${pkg}')
     
     // Update UI
     this.updateCustomPackagesList();
+  }
+  
+  /**
+   * Setup Snippet Toolbar
+   */
+  setupSnippetToolbar() {
+      const items = document.querySelectorAll('.snippet-item');
+      items.forEach(item => {
+          item.addEventListener('click', () => {
+              const snippet = item.getAttribute('data-snippet').replace(/\\n/g, '\n');
+              this.insertSnippet(snippet);
+          });
+      });
+  }
+  
+  insertSnippet(text) {
+      if (this.monacoEditor) {
+          const position = this.monacoEditor.getPosition();
+          this.monacoEditor.executeEdits("", [
+              {
+                  range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+                  text: text,
+                  forceMoveMarkers: true
+              }
+          ]);
+          this.monacoEditor.focus();
+      } else if (this.editorElement) {
+          const start = this.editorElement.selectionStart;
+          const end = this.editorElement.selectionEnd;
+          const value = this.editorElement.value;
+          this.editorElement.value = value.substring(0, start) + text + value.substring(end);
+          this.editorElement.focus();
+      }
+  }
+  
+  /**
+   * Format Code using Black
+   */
+  async formatCode() {
+      const code = this.getCode();
+      if (!code.trim()) return;
+      
+      if (!this.pyodideReady) {
+          this.displayOutput('⏳ Loading formatter...');
+          await this.initializePyodide();
+      }
+      
+      try {
+          // Note: black package must be loaded
+          const formatted = await this.pyodide.runPythonAsync(`
+import black
+try:
+    formatted = black.format_str(${JSON.stringify(code)}, mode=black.Mode())
+    formatted
+except Exception as e:
+    str(e)
+          `);
+          
+          if (formatted.startsWith('error:')) {
+              this.displayError('Formatting failed: ' + formatted);
+          } else {
+              this.setCode(formatted);
+              this.displayOutput('✨ Code formatted successfully!');
+          }
+      } catch (e) {
+          this.displayError('Formatter Error: ' + e.message);
+      }
   }
 
   /**
@@ -1153,4 +1227,3 @@ If it's a variable, make sure it's defined first.`;
     };
   }
 }
-

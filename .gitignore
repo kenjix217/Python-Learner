@@ -1,83 +1,28 @@
-# Python AI Tutor - Git Ignore File
+# Private & System Files
+*.md
+*.MD
+!README.md
+!frontend/lessons/*.md
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# Architecture and System definitions (Explicit ignore for safety)
+Architecture.MD
+ARCHITECTURE.MD
+SYSTEM.md
+REQUIREMENTS.MD
+CODING_STANDARDS.md
+FREE_TOOLS_AND_LICENSING.md
+BUSINESS_MODEL_EVOLUTION.md
+CHANGELOG.md
 
-# Virtual Environments
+# Private Solutions
+golden_source/
+
+# Environment & Build
 venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Jupyter Notebooks
-.ipynb_checkpoints
-
-# Environment Variables
+__pycache__/
 .env
-.env.local
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# Logs
-*.log
-logs/
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-
-# Node (if added later)
-node_modules/
-npm-debug.log
-yarn-error.log
-
-# Build artifacts
-*.wasm
-*.pyc
-
-# OS
-Thumbs.db
 .DS_Store
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-
-
-
+*.log
+backend/
+Recording*.mp4
+START_WITH_AI.bat

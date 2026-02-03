@@ -27,7 +27,7 @@ export const Config = {
    */
   ai: {
     // Set to true to enable AI tutor (requires API key below)
-    enabled: false,
+    enabled: true,
     
     // Your API provider
     provider: 'openrouter', // 'openrouter', 'openai', 'anthropic', or 'custom'
@@ -35,10 +35,11 @@ export const Config = {
     // Your API key (keep this private!)
     // IMPORTANT: In production, use environment variables or backend proxy
     // NEVER commit API keys to public repositories
-    apiKey: '',
+    apiKey: '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',
     
     // Model to use (provider-specific)
-    model: 'meta-llama/llama-3.2-3b-instruct:free', // OpenRouter free model example
+    // User requested "glm 4.7free" - mapping to OpenRouter free GLM-4 model
+    model: 'thudm/glm-4-9b-chat:free', 
     
     // Custom endpoint (if provider is 'custom')
     customEndpoint: '',

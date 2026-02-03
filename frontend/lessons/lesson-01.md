@@ -81,6 +81,28 @@ You have just written and run your first Python program. Notice how Python immed
 
 ---
 
+<div class="in-the-wild">
+<h3>🌍 Python In The Wild</h3>
+<p>Where is this actually used?</p>
+<ul>
+    <li><strong>NASA:</strong> Uses Python to analyze data from space telescopes.</li>
+    <li><strong>Netflix:</strong> Uses Python to recommend movies you might like.</li>
+    <li><strong>Instagram:</strong> Built largely on Python to handle millions of photos.</li>
+</ul>
+<p>The code you are learning today is the same language used by these giants!</p>
+</div>
+
+<div class="fix-this-challenge">
+<h3>🛠️ Challenge: Fix This Code!</h3>
+<p>The code below is broken. Can you spot the error and fix it in the Practice tab?</p>
+<pre><code class="language-python">print("This works fine")
+print("But this is broken"
+print("And this is ignored")</code></pre>
+<p><strong>Hint:</strong> Look closely at the second line. What is missing at the end?</p>
+</div>
+
+---
+
 ## Homework
 
 Your task is to write a program that displays **three lines of text**.

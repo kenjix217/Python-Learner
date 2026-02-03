@@ -9,7 +9,9 @@ import { ProgressTracker } from './progress-tracker.js?v=40';
 import { Settings } from './settings.js?v=40';
 import { AITutor } from './ai-tutor.js?v=40';
 import { Config } from './config.js?v=40';
-import { VoiceNarrator } from './voice-narrator.js?v=40';
+import { AuthManager } from './auth-manager.js?v=40';
+import { Arcade } from './arcade.js?v=40';
+import { Launchpad } from './launchpad.js?v=40';
 
 class PythonTutorApp {
   constructor() {
@@ -19,6 +21,9 @@ class PythonTutorApp {
     this.progressTracker = new ProgressTracker();
     this.settings = new Settings();
     this.aiTutor = new AITutor();
+    this.authManager = new AuthManager();
+    this.arcade = new Arcade(this.codeEditor);
+    this.launchpad = new Launchpad();
     
     this.init();
   }
@@ -26,16 +31,22 @@ class PythonTutorApp {
   /**
    * Initialize the application
    */
-  init() {
+  async init() {
     this.setupNavigation();
     this.setupLessonList();
+    this.setupAuthUI();
+    this.setupArcadeUI();
+    this.setupResourcesUI();
     this.loadInitialView();
     
     // Inject AI tutor into lesson viewer
     this.lessonViewer.setAITutor(this.aiTutor);
     
-    console.log('Python Tutor App initialized');
-    console.log('AI Tutor:', Config.features.showAITutor ? 'Enabled' : 'Disabled');
+    // Check Auth State
+    if (this.authManager.isAuthenticated) {
+        await this.authManager.fetchUserProfile();
+        this.updateAuthButtonState();
+    }
   }
 
   /**
@@ -47,7 +58,9 @@ class PythonTutorApp {
       'nav-practice': 'practice',
       'nav-progress': 'progress',
       'nav-resources': 'resources',
-      'nav-settings': 'settings'
+      'nav-settings': 'settings',
+      'nav-arcade': 'arcade',
+      'nav-auth': 'auth'
     };
 
     Object.entries(navButtons).forEach(([buttonId, viewName]) => {
@@ -63,6 +76,101 @@ class PythonTutorApp {
       backButton.addEventListener('click', () => this.showLessonList());
     }
   }
+  
+  /**
+   * Setup Auth UI Logic
+   */
+  setupAuthUI() {
+    const form = document.getElementById('auth-form');
+    const toggleBtn = document.getElementById('auth-toggle-mode');
+    const submitBtn = document.getElementById('auth-submit');
+    const title = document.getElementById('auth-title');
+    const emailGroup = document.getElementById('email-group');
+    const errorMsg = document.getElementById('auth-error');
+    
+    let isRegisterMode = false;
+    
+    toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        isRegisterMode = !isRegisterMode;
+        title.innerText = isRegisterMode ? 'Register' : 'Login';
+        submitBtn.innerText = isRegisterMode ? 'Register' : 'Login';
+        emailGroup.style.display = isRegisterMode ? 'block' : 'none';
+        toggleBtn.innerText = isRegisterMode ? 'Login' : 'Register';
+        errorMsg.innerText = '';
+    });
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('auth-username').value;
+        const password = document.getElementById('auth-password').value;
+        const email = document.getElementById('auth-email').value;
+        
+        submitBtn.disabled = true;
+        errorMsg.innerText = '';
+        
+        let result;
+        if (isRegisterMode) {
+            result = await this.authManager.register(username, password, email);
+        } else {
+            result = await this.authManager.login(username, password);
+        }
+        
+        if (result.success) {
+            this.updateAuthButtonState();
+            this.switchView('lessons');
+        } else {
+            errorMsg.innerText = result.error || 'Authentication failed';
+        }
+        submitBtn.disabled = false;
+    });
+  }
+  
+  updateAuthButtonState() {
+    const btn = document.getElementById('nav-auth');
+    if (this.authManager.isAuthenticated) {
+        btn.innerText = `👤 ${this.authManager.user?.username || 'Profile'}`;
+        // Optional: Change click behavior to show profile/logout instead of login form
+        // For MVP, clicking it again shows Auth View which we can turn into a Profile view later
+    } else {
+        btn.innerText = 'Login';
+    }
+  }
+
+  /**
+   * Setup Arcade UI
+   */
+  setupArcadeUI() {
+      document.getElementById('start-bug-hunter').addEventListener('click', () => {
+          const level = this.arcade.loadBugHunterLevel(0);
+          this.codeEditor.initializeIfNeeded(); // Ensure Monaco is ready
+          this.switchView('practice');
+          // Optional: Show a toast/notification about the challenge
+          alert(`🐛 Bug Hunter Challenge: ${level.title}\n\nHint: ${level.hint}`);
+      });
+      
+      document.getElementById('start-visual-art').addEventListener('click', () => {
+          this.arcade.loadVisualArt();
+          this.codeEditor.initializeIfNeeded();
+          this.switchView('practice');
+      });
+  }
+  
+  /**
+   * Setup Resources UI (Launchpad)
+   */
+  setupResourcesUI() {
+      const btn = document.getElementById('download-starter-kit');
+      if (btn) {
+          btn.addEventListener('click', async () => {
+             btn.disabled = true;
+             btn.innerText = "Generating ZIP...";
+             await this.launchpad.generateStarterKit();
+             btn.innerText = "📦 Download Starter Kit (.zip)";
+             btn.disabled = false;
+          });
+      }
+  }
 
   /**
    * Set up lesson list
@@ -76,7 +184,6 @@ class PythonTutorApp {
 
     lessonListContainer.innerHTML = lessons.map(lesson => {
       const isCompleted = progress.completedLessons.includes(lesson.id);
-      const status = isCompleted ? 'completed' : '';
       
       return `
         <div class="lesson-card" data-lesson-id="${lesson.id}">
@@ -100,7 +207,7 @@ class PythonTutorApp {
   }
 
   /**
-   * Get available lessons (will be loaded from markdown files later)
+   * Get available lessons
    */
   getLessons() {
     return [
@@ -246,22 +353,25 @@ class PythonTutorApp {
   }
 
   /**
-   * Switch between main views (lessons, practice, progress)
+   * Switch between main views
    */
   switchView(viewName) {
     // Update navigation buttons
     document.querySelectorAll('.nav-button').forEach(btn => {
       btn.classList.remove('active');
     });
-    document.getElementById(`nav-${viewName}`).classList.add('active');
+    const activeBtn = document.getElementById(`nav-${viewName}`);
+    if (activeBtn) activeBtn.classList.add('active');
 
-    // Show appropriate view
+    // View Mapping
     const viewMap = {
       'lessons': 'lesson-list-view',
       'practice': 'practice-view',
       'progress': 'progress-view',
       'resources': 'resources-view',
-      'settings': 'settings-view'
+      'settings': 'settings-view',
+      'arcade': 'arcade-view',
+      'auth': 'auth-view'
     };
 
     document.querySelectorAll('.view').forEach(view => {
@@ -310,12 +420,7 @@ class PythonTutorApp {
    * Show lesson list
    */
   showLessonList() {
-    document.querySelectorAll('.view').forEach(view => {
-      view.classList.remove('active');
-    });
-    document.getElementById('lesson-list-view').classList.add('active');
-    
-    // Refresh lesson list to show updated progress
+    this.switchView('lessons');
     this.setupLessonList();
   }
 
@@ -340,7 +445,6 @@ class PythonTutorApp {
    * Show error message to user
    */
   showError(message) {
-    // Simple alert for now; can be enhanced with a custom modal
     alert(message);
   }
 }
@@ -353,4 +457,3 @@ if (document.readyState === 'loading') {
 } else {
   window.pythonTutorApp = new PythonTutorApp();
 }
-

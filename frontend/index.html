@@ -6,6 +6,8 @@
   <meta name="description" content="Learn Python from scratch with AI-assisted interactive lessons">
   <title>Python AI Tutor — Learn Python in Your Browser</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/snippets.css">
+  <link rel="stylesheet" href="css/lessons.css">
 </head>
 <body>
   <div class="app-container">
@@ -18,14 +20,79 @@
       <nav class="app-nav">
         <button id="nav-lessons" class="nav-button active" aria-label="View lessons">Lessons</button>
         <button id="nav-practice" class="nav-button" aria-label="Practice coding">Practice</button>
+        <button id="nav-arcade" class="nav-button" aria-label="Fun challenges">Arcade 🎮</button>
         <button id="nav-progress" class="nav-button" aria-label="View progress">Progress</button>
         <button id="nav-resources" class="nav-button" aria-label="Resources">Resources</button>
         <button id="nav-settings" class="nav-button" aria-label="Settings">Settings</button>
+        <button id="nav-auth" class="nav-button btn-auth" aria-label="Login or Register">Login</button>
       </nav>
     </header>
 
     <!-- Main Content Area -->
     <main class="app-main">
+      <!-- Auth View (Login/Register) -->
+      <section id="auth-view" class="view">
+        <div class="auth-container">
+          <div class="auth-box">
+            <h2 id="auth-title">Login</h2>
+            <form id="auth-form">
+              <div class="form-group">
+                <label for="auth-username">Username</label>
+                <input type="text" id="auth-username" required>
+              </div>
+              <div class="form-group" id="email-group" style="display: none;">
+                <label for="auth-email">Email (Optional)</label>
+                <input type="email" id="auth-email">
+              </div>
+              <div class="form-group">
+                <label for="auth-password">Password</label>
+                <input type="password" id="auth-password" required>
+              </div>
+              <button type="submit" class="btn-primary" id="auth-submit">Login</button>
+            </form>
+            <p id="auth-toggle-text">
+              Don't have an account? <button id="auth-toggle-mode" class="btn-text">Register</button>
+            </p>
+            <p id="auth-error" class="error-message"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Arcade View -->
+      <section id="arcade-view" class="view">
+        <div class="arcade-container">
+          <h2>Python Arcade 🕹️</h2>
+          <div class="arcade-modes">
+            <div class="arcade-card">
+              <h3>🐛 Bug Hunter</h3>
+              <p>Fix broken code snippets to win!</p>
+              <button id="start-bug-hunter" class="btn-primary">Play Now</button>
+            </div>
+            <div class="arcade-card">
+              <h3>🎨 Visual Art</h3>
+              <p>Generate cool patterns with Math & Matplotlib.</p>
+              <button id="start-visual-art" class="btn-secondary">Open Canvas</button>
+            </div>
+            <div class="arcade-card">
+              <h3>⛳ Code Golf</h3>
+              <p>Coming Soon!</p>
+              <button class="btn-disabled" disabled>Locked</button>
+            </div>
+          </div>
+          <div id="arcade-game-area" style="display:none; margin-top: 2rem;">
+            <div class="arcade-header">
+              <h3 id="arcade-game-title">Bug Hunter Level 1</h3>
+              <button id="arcade-back" class="btn-secondary">Exit Arcade</button>
+            </div>
+            <p id="arcade-instruction">Fix the bug in the code below:</p>
+            <div class="editor-container" style="height: 300px;">
+                <!-- Reusing Monaco logic by dynamically attaching it here or sharing the instance -->
+                <!-- For MVP, we will direct users to the Practice tab with pre-filled code -->
+                <p><em>Code loaded into Practice Editor...</em></p>
+            </div>
+          </div>
+        </div>
+      </section>
       <!-- Lesson List View -->
       <section id="lesson-list-view" class="view active">
         <div class="lesson-list-container">
@@ -314,18 +381,31 @@ print(f"Winner: {players[scores.index(max(scores))]}")</code></pre>
             <div class="editor-header">
               <label for="code-editor" class="editor-label">Python Code Editor</label>
               <div class="editor-controls">
+                <button id="format-code" class="btn-secondary" title="Auto-format code with Black">✨ Prettify</button>
                 <button id="run-code" class="btn-primary" aria-label="Run Python code">▶ Run Code</button>
                 <button id="clear-code" class="btn-secondary" aria-label="Clear editor">Clear</button>
               </div>
             </div>
-            <div class="editor-content" id="editor-content">
-              <textarea 
-                id="code-editor" 
-                class="code-editor"
-                spellcheck="false"
-                aria-label="Python code editor"
-                placeholder="# Write your Python code here...&#10;print('Hello, Python!')"
-              ></textarea>
+            <div class="editor-body">
+                <!-- Snippet Toolbar (New) -->
+                <div class="snippet-sidebar">
+                    <div class="snippet-item" data-snippet="print('Hello')">print</div>
+                    <div class="snippet-item" data-snippet="if condition:\n    pass">if/else</div>
+                    <div class="snippet-item" data-snippet="for i in range(5):\n    print(i)">for loop</div>
+                    <div class="snippet-item" data-snippet="def my_func():\n    return">function</div>
+                    <div class="snippet-item" data-snippet="import math">import</div>
+                    <div class="snippet-item" data-snippet="# Comment">comment</div>
+                </div>
+                <!-- Monaco Container -->
+                <div class="editor-content" id="editor-content">
+                  <textarea 
+                    id="code-editor" 
+                    class="code-editor"
+                    spellcheck="false"
+                    aria-label="Python code editor"
+                    placeholder="# Write your Python code here...&#10;print('Hello, Python!')"
+                  ></textarea>
+                </div>
             </div>
           </div>
           
@@ -368,6 +448,21 @@ print(f"Winner: {players[scores.index(max(scores))]}")</code></pre>
         <div class="resources-container">
           <h2>📚 Learning Resources</h2>
           <p class="resources-subtitle">Additional guides and resources to support your learning journey</p>
+
+          <!-- Launchpad Starter Kit -->
+          <div class="resource-card">
+            <div class="resource-icon">🚀</div>
+            <div class="resource-content">
+              <h3>Starter Kit "Launchpad"</h3>
+              <p>
+                <strong>Everything you need in one ZIP file.</strong><br>
+                Includes PDF Cheatsheet, Setup Scripts (Windows/Mac), and 3 Template Projects.
+              </p>
+              <div class="resource-actions">
+                <button id="download-starter-kit" class="btn-primary">📦 Download Starter Kit (.zip)</button>
+              </div>
+            </div>
+          </div>
 
           <!-- Python Installation Guide -->
           <div class="resource-card">

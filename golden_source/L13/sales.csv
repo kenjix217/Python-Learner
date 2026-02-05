@@ -1,0 +1,11 @@
+date,product,quantity,price
+2026-01-10,Widget A,5,29.99
+2026-01-10,Widget B,3,49.99
+2026-01-11,Widget A,2,29.99
+2026-01-11,Widget C,7,19.99
+2026-01-12,Widget A,4,29.99
+2026-01-13,Widget B,1,49.99
+2026-01-14,Widget D,10,9.99
+2026-01-14,Widget A,3,29.99
+2026-01-15,Widget C,2,19.99
+2026-01-15,Widget B,5,49.99

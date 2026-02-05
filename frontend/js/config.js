@@ -95,7 +95,7 @@ Your role: Guide and encourage, never solve for them.`
    */
   features: {
     // Show AI tutor chat button (only if ai.enabled is true)
-    showAITutor: false,
+    showAITutor: true,
     
     // Show voice narration controls
     showVoiceControls: true,
@@ -120,12 +120,12 @@ Your role: Guide and encourage, never solve for them.`
     // Progress storage key
     progressStorageKey: 'python-tutor-progress',
     
-    // Backend API URL
-    // Change this when deploying to production
+    // Backend API URL (only used if useBackendProxy is true)
     backendURL: 'http://localhost:8000',
     
-    // Use backend proxy for AI calls (solves CORS, secures keys)
-    useBackendProxy: true
+    // Use backend proxy for AI calls. Set false to call OpenRouter/OpenAI/Anthropic directly from the browser.
+    // Set true only if you run your own backend that exposes /api/ai/chat.
+    useBackendProxy: false
   }
 };
 
@@ -188,7 +188,11 @@ export function loadConfig() {
     const saved = localStorage.getItem('python-tutor-config');
     if (saved) {
       const savedConfig = JSON.parse(saved);
-      Object.assign(Config, savedConfig);
+      // Merge so new defaults (e.g. useBackendProxy: false) apply when not in saved config
+      if (savedConfig.ai) Object.assign(Config.ai, savedConfig.ai);
+      if (savedConfig.voice) Object.assign(Config.voice, savedConfig.voice);
+      if (savedConfig.features) Object.assign(Config.features, savedConfig.features);
+      if (savedConfig.platform) Object.assign(Config.platform, savedConfig.platform);
       console.log('✅ Configuration loaded from storage');
     }
   } catch (e) {

@@ -10,7 +10,6 @@ import { Settings } from './settings.js?v=40';
 import { AITutor } from './ai-tutor.js?v=40';
 import { Config } from './config.js?v=40';
 import { AuthManager } from './auth-manager.js?v=40';
-import { Arcade } from './arcade.js?v=40';
 import { Launchpad } from './launchpad.js?v=40';
 
 class PythonTutorApp {
@@ -22,7 +21,6 @@ class PythonTutorApp {
     this.settings = new Settings();
     this.aiTutor = new AITutor();
     this.authManager = new AuthManager();
-    this.arcade = new Arcade(this.codeEditor);
     this.launchpad = new Launchpad();
     
     this.init();
@@ -35,7 +33,6 @@ class PythonTutorApp {
     this.setupNavigation();
     this.setupLessonList();
     this.setupAuthUI();
-    this.setupArcadeUI();
     this.setupResourcesUI();
     this.loadInitialView();
     
@@ -59,7 +56,6 @@ class PythonTutorApp {
       'nav-progress': 'progress',
       'nav-resources': 'resources',
       'nav-settings': 'settings',
-      'nav-arcade': 'arcade',
       'nav-auth': 'auth'
     };
 
@@ -137,25 +133,6 @@ class PythonTutorApp {
     }
   }
 
-  /**
-   * Setup Arcade UI
-   */
-  setupArcadeUI() {
-      document.getElementById('start-bug-hunter').addEventListener('click', () => {
-          const level = this.arcade.loadBugHunterLevel(0);
-          this.codeEditor.initializeIfNeeded(); // Ensure Monaco is ready
-          this.switchView('practice');
-          // Optional: Show a toast/notification about the challenge
-          alert(`🐛 Bug Hunter Challenge: ${level.title}\n\nHint: ${level.hint}`);
-      });
-      
-      document.getElementById('start-visual-art').addEventListener('click', () => {
-          this.arcade.loadVisualArt();
-          this.codeEditor.initializeIfNeeded();
-          this.switchView('practice');
-      });
-  }
-  
   /**
    * Setup Resources UI (Launchpad)
    */
@@ -370,7 +347,6 @@ class PythonTutorApp {
       'progress': 'progress-view',
       'resources': 'resources-view',
       'settings': 'settings-view',
-      'arcade': 'arcade-view',
       'auth': 'auth-view'
     };
 

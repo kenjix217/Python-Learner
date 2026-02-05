@@ -114,25 +114,40 @@ export class AITutor {
    * Call backend proxy (solves CORS, prepares for SaaS)
    */
   async callBackendProxy() {
-    const response = await fetch(`${Config.platform.backendURL}/api/ai/chat`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: this.conversationHistory[this.conversationHistory.length - 1].content,
-        lesson_id: this.currentLesson?.id,
-        conversation_history: this.conversationHistory,
-        provider: Config.ai.provider,
-        api_key: Config.ai.apiKey,
-        model: Config.ai.model,
-        custom_endpoint: Config.ai.customEndpoint
-      })
-    });
+    let response;
+    try {
+      response = await fetch(`${Config.platform.backendURL}/api/ai/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: this.conversationHistory[this.conversationHistory.length - 1].content,
+          lesson_id: this.currentLesson?.id,
+          conversation_history: this.conversationHistory,
+          provider: Config.ai.provider,
+          api_key: Config.ai.apiKey,
+          model: Config.ai.model,
+          custom_endpoint: Config.ai.customEndpoint
+        })
+      });
+    } catch (networkError) {
+      throw new Error(
+        `Could not reach the backend server at ${Config.platform.backendURL}. ` +
+        'If you are not running your own backend, go to Settings and uncheck "Use backend proxy" to call the AI API directly from your browser.'
+      );
+    }
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.detail || 'Backend proxy error');
+      let message = `Backend error (${response.status})`;
+      try {
+        const body = await response.json();
+        message = body.detail || body.message || message;
+      } catch (_) {
+        const text = await response.text();
+        if (text) message = text.slice(0, 200);
+      }
+      throw new Error(message);
     }
 
     const data = await response.json();
@@ -143,6 +158,7 @@ export class AITutor {
    * OpenRouter API implementation
    */
   async callOpenRouter() {
+    const model = (Config.ai.model && Config.ai.model.trim()) || 'meta-llama/llama-3.2-3b-instruct:free';
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -152,7 +168,7 @@ export class AITutor {
         'X-Title': 'Python AI Tutor'
       },
       body: JSON.stringify({
-        model: Config.ai.model,
+        model,
         messages: this.conversationHistory,
         temperature: Config.ai.temperature,
         max_tokens: Config.ai.maxTokens
@@ -160,12 +176,23 @@ export class AITutor {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'API request failed');
+      let message = 'OpenRouter API request failed';
+      try {
+        const body = await response.json();
+        message = body.error?.message || body.message || message;
+      } catch (_) {
+        const text = await response.text();
+        if (text) message = text.slice(0, 200);
+      }
+      throw new Error(message);
     }
 
     const data = await response.json();
-    return data.choices[0].message.content;
+    const content = data.choices?.[0]?.message?.content;
+    if (content == null) {
+      throw new Error('Unexpected API response format');
+    }
+    return content;
   }
 
   /**

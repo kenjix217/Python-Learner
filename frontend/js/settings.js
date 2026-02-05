@@ -78,6 +78,9 @@ export class Settings {
     const aiCustomEndpoint = document.getElementById('ai-custom-endpoint');
     if (aiCustomEndpoint) aiCustomEndpoint.value = Config.ai.customEndpoint || '';
 
+    const useBackendProxy = document.getElementById('use-backend-proxy');
+    if (useBackendProxy) useBackendProxy.checked = Config.platform.useBackendProxy || false;
+
     // Voice settings
     const voiceEnabled = document.getElementById('voice-enabled');
     if (voiceEnabled) voiceEnabled.checked = Config.voice.enabled;
@@ -111,6 +114,7 @@ export class Settings {
       const aiKey = document.getElementById('ai-key')?.value?.trim() || '';
       const aiModel = document.getElementById('ai-model')?.value?.trim() || '';
       const aiCustomEndpoint = document.getElementById('ai-custom-endpoint')?.value?.trim() || '';
+      const useBackendProxy = document.getElementById('use-backend-proxy')?.checked ?? false;
 
       const voiceEnabled = document.getElementById('voice-enabled')?.checked ?? true;
       const voiceRate = parseFloat(document.getElementById('voice-rate')?.value || 1.0);
@@ -138,6 +142,10 @@ export class Settings {
           ...Config.features,
           requireHomeworkValidation: requireHomework,
           showAITutor: aiEnabled && aiKey !== ''
+        },
+        platform: {
+          ...Config.platform,
+          useBackendProxy
         }
       });
 

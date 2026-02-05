@@ -1,6 +1,6 @@
 /**
  * Code Editor Module
- * Handles in-browser Python code execution, snippets, and formatting
+ * Handles in-browser Python code execution and formatting
  */
 
 export class CodeEditor {
@@ -18,7 +18,6 @@ export class CodeEditor {
     this.setupEventHandlers();
     this.setupResizableDivider();
     this.setupLibraryManager();
-    this.setupSnippetToolbar(); // New
     // Monaco will load lazily when Practice tab is first opened
   }
 
@@ -191,39 +190,6 @@ await micropip.install('${pkg}')
     
     // Update UI
     this.updateCustomPackagesList();
-  }
-  
-  /**
-   * Setup Snippet Toolbar
-   */
-  setupSnippetToolbar() {
-      const items = document.querySelectorAll('.snippet-item');
-      items.forEach(item => {
-          item.addEventListener('click', () => {
-              const snippet = item.getAttribute('data-snippet').replace(/\\n/g, '\n');
-              this.insertSnippet(snippet);
-          });
-      });
-  }
-  
-  insertSnippet(text) {
-      if (this.monacoEditor) {
-          const position = this.monacoEditor.getPosition();
-          this.monacoEditor.executeEdits("", [
-              {
-                  range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
-                  text: text,
-                  forceMoveMarkers: true
-              }
-          ]);
-          this.monacoEditor.focus();
-      } else if (this.editorElement) {
-          const start = this.editorElement.selectionStart;
-          const end = this.editorElement.selectionEnd;
-          const value = this.editorElement.value;
-          this.editorElement.value = value.substring(0, start) + text + value.substring(end);
-          this.editorElement.focus();
-      }
   }
   
   /**

@@ -20,7 +20,6 @@
       <nav class="app-nav">
         <button id="nav-lessons" class="nav-button active" aria-label="View lessons">Lessons</button>
         <button id="nav-practice" class="nav-button" aria-label="Practice coding">Practice</button>
-        <button id="nav-arcade" class="nav-button" aria-label="Fun challenges">Arcade 🎮</button>
         <button id="nav-progress" class="nav-button" aria-label="View progress">Progress</button>
         <button id="nav-resources" class="nav-button" aria-label="Resources">Resources</button>
         <button id="nav-settings" class="nav-button" aria-label="Settings">Settings</button>
@@ -58,41 +57,6 @@
         </div>
       </section>
 
-      <!-- Arcade View -->
-      <section id="arcade-view" class="view">
-        <div class="arcade-container">
-          <h2>Python Arcade 🕹️</h2>
-          <div class="arcade-modes">
-            <div class="arcade-card">
-              <h3>🐛 Bug Hunter</h3>
-              <p>Fix broken code snippets to win!</p>
-              <button id="start-bug-hunter" class="btn-primary">Play Now</button>
-            </div>
-            <div class="arcade-card">
-              <h3>🎨 Visual Art</h3>
-              <p>Generate cool patterns with Math & Matplotlib.</p>
-              <button id="start-visual-art" class="btn-secondary">Open Canvas</button>
-            </div>
-            <div class="arcade-card">
-              <h3>⛳ Code Golf</h3>
-              <p>Coming Soon!</p>
-              <button class="btn-disabled" disabled>Locked</button>
-            </div>
-          </div>
-          <div id="arcade-game-area" style="display:none; margin-top: 2rem;">
-            <div class="arcade-header">
-              <h3 id="arcade-game-title">Bug Hunter Level 1</h3>
-              <button id="arcade-back" class="btn-secondary">Exit Arcade</button>
-            </div>
-            <p id="arcade-instruction">Fix the bug in the code below:</p>
-            <div class="editor-container" style="height: 300px;">
-                <!-- Reusing Monaco logic by dynamically attaching it here or sharing the instance -->
-                <!-- For MVP, we will direct users to the Practice tab with pre-filled code -->
-                <p><em>Code loaded into Practice Editor...</em></p>
-            </div>
-          </div>
-        </div>
-      </section>
       <!-- Lesson List View -->
       <section id="lesson-list-view" class="view active">
         <div class="lesson-list-container">
@@ -387,16 +351,6 @@ print(f"Winner: {players[scores.index(max(scores))]}")</code></pre>
               </div>
             </div>
             <div class="editor-body">
-                <!-- Snippet Toolbar (New) -->
-                <div class="snippet-sidebar">
-                    <div class="snippet-item" data-snippet="print('Hello')">print</div>
-                    <div class="snippet-item" data-snippet="if condition:\n    pass">if/else</div>
-                    <div class="snippet-item" data-snippet="for i in range(5):\n    print(i)">for loop</div>
-                    <div class="snippet-item" data-snippet="def my_func():\n    return">function</div>
-                    <div class="snippet-item" data-snippet="import math">import</div>
-                    <div class="snippet-item" data-snippet="# Comment">comment</div>
-                </div>
-                <!-- Monaco Container -->
                 <div class="editor-content" id="editor-content">
                   <textarea 
                     id="code-editor" 
@@ -591,6 +545,14 @@ print(f"Winner: {players[scores.index(max(scores))]}")</code></pre>
                 class="setting-input"
                 placeholder="https://your-api-endpoint.com/v1/chat"
               >
+            </div>
+
+            <div class="setting-item">
+              <label for="use-backend-proxy" class="setting-label">
+                <input type="checkbox" id="use-backend-proxy" class="setting-checkbox">
+                Use backend proxy
+              </label>
+              <small class="setting-hint">Only enable if you run your own backend server (e.g. localhost:8000). Leave unchecked to call the API directly from your browser.</small>
             </div>
           </div>
 

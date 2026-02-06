@@ -30,6 +30,22 @@ Flask is:
 
 ---
 
+## Golden Source Solutions
+
+**Download the complete reference solutions for this lesson:**
+
+<a href="golden_source/L14/" class="btn-primary" style="margin: 1rem 0; display: inline-block; padding: 0.5rem 1rem; text-decoration: none; background-color: var(--color-primary); color: white; border-radius: 4px;">📥 Download Lesson 14 Solutions</a>
+
+These solutions include:
+- Complete homework solutions with detailed comments
+- Additional examples and exercises
+- Best practices and optimization techniques
+- Common pitfalls and how to avoid them
+
+**Note:** These solutions require real Python installed on your computer. They won't work in the browser-based editor.
+
+---
+
 **Basic web concepts:**
 
 **HTTP:** The protocol (language) web browsers and servers use to communicate.

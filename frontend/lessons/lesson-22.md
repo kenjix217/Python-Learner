@@ -56,6 +56,25 @@ finally:
     cleanup_resources()
 ```
 
+---
+
+## Golden Source Solutions (Final Project)
+
+**Download the complete reference solution for the Final Project:**
+
+<a href="golden_source/L22/" class="btn-primary" style="margin: 1rem 0; display: inline-block; padding: 0.5rem 1rem; text-decoration: none; background-color: var(--color-primary); color: white; border-radius: 4px;">📥 Download Final Project Solution</a>
+
+This reference project includes:
+- A complete, production-ready "Task Manager" application
+- Professional folder structure
+- Unit tests
+- Database integration
+- Documentation and README
+
+**Note:** This project requires real Python installed on your computer.
+
+---
+
 **Code style:**
 ```python
 # Good - clear, descriptive

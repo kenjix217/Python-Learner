@@ -1469,11 +1469,29 @@ button {
 
 @media (max-width: 768px) {
   .app-header {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
+  }
+  
+  .app-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: var(--spacing-xs);
+    scrollbar-width: none; /* Firefox */
+  }
+  
+  .app-nav::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+  
+  .nav-button {
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
   }
   
   .app-main {
     padding: var(--spacing-md);
+    margin-top: 140px; /* Adjusted for mobile header height */
   }
   
   .lesson-container {
